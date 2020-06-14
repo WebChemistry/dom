@@ -4,6 +4,7 @@ namespace WebChemistry\Dom\Replacer;
 
 use DOMCharacterData;
 use DOMDocument;
+use DOMDocumentType;
 use DOMNode;
 
 final class TextNodeReplacer
@@ -51,13 +52,22 @@ final class TextNodeReplacer
 
 	private function iterateChildNodes(DOMNode $node): void
 	{
-		/** @var DOMNode $node */
-		foreach ($node->childNodes as $node) {
-			if ($node instanceof DOMCharacterData) {
-				$this->texts[] = $node;
-			} else {
-				$this->iterateChildNodes($node);
+		$child = $node->firstChild;
+
+		while ($child) {
+			if ($child instanceof DOMDocumentType) {
+				$child = $child->nextSibling;
+
+				continue;
 			}
+
+			if ($child instanceof DOMCharacterData) {
+				$this->texts[] = $child;
+			} else if ($child->hasChildNodes()) {
+				$this->iterateChildNodes($child);
+			}
+
+			$child = $child->nextSibling;
 		}
 	}
 

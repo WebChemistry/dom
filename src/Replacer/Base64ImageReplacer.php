@@ -47,7 +47,12 @@ final class Base64ImageReplacer
 				continue;
 			}
 
-			$attr->value = ($this->callback)(new FileInfo($mimeType, $binary));
+			$value = ($this->callback)(new FileInfo($mimeType, $binary), $image);
+			if ($value === null) {
+				$image->removeAttribute('src');
+			} else {
+				$attr->value = $value;
+			}
 		}
 	}
 

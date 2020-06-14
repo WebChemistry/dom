@@ -8,7 +8,7 @@ use DOMNamedNodeMap;
 use DOMNode;
 use Masterminds\HTML5;
 
-final class DomRenderer
+final class Html5DomRenderer implements DomRendererInterface
 {
 
 	private HTML5 $parser;

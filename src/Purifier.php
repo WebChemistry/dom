@@ -6,7 +6,9 @@ use DOMCharacterData;
 use DOMNode;
 use LogicException;
 use Masterminds\HTML5;
-use WebChemistry\Dom\Renderer\DomRenderer;
+use WebChemistry\Dom\Parser\DomDocumentParserInterface;
+use WebChemistry\Dom\Parser\Html5DocumentParser;
+use WebChemistry\Dom\Renderer\DomRendererInterface;
 use WebChemistry\Dom\Rule\ElementRuleInterface;
 
 final class Purifier
@@ -15,11 +17,11 @@ final class Purifier
 	/** @var ElementRuleInterface[] */
 	private array $rules = [];
 
-	private HTML5 $parser;
+	private DomDocumentParserInterface $parser;
 
-	public function __construct(?HTML5 $parser = null)
+	public function __construct(?DomDocumentParserInterface $parser = null)
 	{
-		$this->parser = $parser ?? new HTML5(['disable_html_ns' => true]);
+		$this->parser = $parser ?? new Html5DocumentParser();
 	}
 
 	public function addRule(ElementRuleInterface $rule): self
@@ -41,13 +43,13 @@ final class Purifier
 		return $this;
 	}
 
-	public function purify(string $html): DomRenderer
+	public function purify(string $html): DomRendererInterface
 	{
-		$document = $this->parser->loadHTML($html);
+		$renderer = $this->parser->parseHtmlReturnRenderer($html);
 
-		$this->iterateChildren($document);
+		$this->iterateChildren($renderer->getDocument());
 
-		return new DomRenderer($this->parser, $document);
+		return $renderer;
 	}
 
 	private function iterateChildren(DOMNode $parent): void
@@ -57,7 +59,7 @@ final class Purifier
 			if (!$child instanceof DOMCharacterData) {
 				$rule = $this->rules[$child->nodeName] ?? null;
 				if (!$rule) {
-					$child = $this->removeNodeKeepChildren($child);
+					$child = DomManipulator::removeNodeKeepChildren($child);
 				} else {
 					$result = $rule->apply($child);
 
@@ -76,30 +78,6 @@ final class Purifier
 
 			$child = $child->nextSibling;
 		}
-	}
-
-	private function removeNodeKeepChildren(DOMNode $node): DOMNode
-	{
-		$parent = $node->parentNode;
-		if ($parent === null) {
-			return $node;
-		}
-
-		while ($node->hasChildNodes()) {
-			if (!$node->lastChild) {
-				throw new LogicException('Invalid last child');
-			}
-
-			if ($node->nextSibling) {
-				$parent->insertBefore($node->lastChild, $node->nextSibling);
-			} else {
-				$parent->insertBefore($node->lastChild);
-			}
-		}
-
-		$parent->removeChild($node);
-
-		return $parent;
 	}
 
 }
