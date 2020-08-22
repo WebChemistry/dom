@@ -45,4 +45,9 @@ final class Html5DomRenderer implements DomRendererInterface
 		return $html;
 	}
 
+	public function __toString(): string
+	{
+		return $this->renderWithoutDocType();
+	}
+
 }

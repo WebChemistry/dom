@@ -13,4 +13,6 @@ interface DomRendererInterface
 
 	public function renderWithoutDocType(): string;
 
+	public function __toString(): string;
+
 }

@@ -93,20 +93,32 @@ final class TextNodeReplacer
 				return;
 			}
 
+			$replaceWith = [];
+			$replace = false;
 			foreach ($splits as $index => $value) {
 				if ($index % 2 === 1) {
 					$el = ($this->splitCallback)($value, $this->document);
 					if (!$el) {
+						if ($el === null) {
+							$replace = true;
+						}
+
 						continue;
 					}
 
-					$parent->insertBefore($el, $node);
+					$replaceWith[] = $el;
+					$replace = true;
 				} else {
-					$parent->insertBefore($this->document->createTextNode($value), $node);
+					$replaceWith[] = $this->document->createTextNode($value);
 				}
 			}
 
-			$parent->removeChild($node);
+			if ($replace) {
+				foreach ($replaceWith as $item) {
+					$parent->insertBefore($item, $node);
+				}
+				$parent->removeChild($node);
+			}
 
 			return;
 		}
