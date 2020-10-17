@@ -4,11 +4,11 @@ namespace WebChemistry\Dom;
 
 use DOMCharacterData;
 use DOMNode;
-use LogicException;
-use Masterminds\HTML5;
-use WebChemistry\Dom\Parser\DomDocumentParserInterface;
+use InvalidArgumentException;
 use WebChemistry\Dom\Parser\Html5DocumentParser;
-use WebChemistry\Dom\Renderer\DomRendererInterface;
+use WebChemistry\Dom\Parser\HtmlDocumentParserInterface;
+use WebChemistry\Dom\Renderer\DocumentInterface;
+use WebChemistry\Dom\Renderer\DocumentObjectInterface;
 use WebChemistry\Dom\Rule\ElementRuleInterface;
 
 final class Purifier
@@ -17,9 +17,9 @@ final class Purifier
 	/** @var ElementRuleInterface[] */
 	private array $rules = [];
 
-	private DomDocumentParserInterface $parser;
+	private HtmlDocumentParserInterface $parser;
 
-	public function __construct(?DomDocumentParserInterface $parser = null)
+	public function __construct(?HtmlDocumentParserInterface $parser = null)
 	{
 		$this->parser = $parser ?? new Html5DocumentParser();
 	}
@@ -43,13 +43,26 @@ final class Purifier
 		return $this;
 	}
 
-	public function purify(string $html): DomRendererInterface
+	/**
+	 * @param string|DocumentInterface $document
+	 */
+	public function purify($document): DocumentObjectInterface
 	{
-		$renderer = $this->parser->parseHtmlReturnRenderer($html);
+		if ($document instanceof DocumentObjectInterface) {
+			return $document;
+		} elseif ($document instanceof DocumentInterface) {
+			$string = $document->toString();
+		} elseif (is_string($document)) {
+			$string = $document;
+		} else {
+			throw new InvalidArgumentException(sprintf('Argument must be instance of %s or string', DocumentInterface::class));
+		}
 
-		$this->iterateChildren($renderer->getDocument());
+		$document = $this->parser->parseHtml($string);
 
-		return $renderer;
+		$this->iterateChildren($document->getDocument());
+
+		return $document;
 	}
 
 	private function iterateChildren(DOMNode $parent): void

@@ -2,16 +2,14 @@
 
 namespace WebChemistry\Dom\Renderer;
 
-use DOMCharacterData;
 use DOMDocument;
-use DOMNamedNodeMap;
-use DOMNode;
 use Masterminds\HTML5;
 
-final class Html5DomRenderer implements DomRendererInterface
+final class Html5Document implements DocumentObjectInterface
 {
 
 	private HTML5 $parser;
+
 	private DOMDocument $document;
 
 	public function __construct(HTML5 $parser, DOMDocument $document)
@@ -25,12 +23,12 @@ final class Html5DomRenderer implements DomRendererInterface
 		return $this->document;
 	}
 
-	public function render(): string
+	public function isObject(): bool
 	{
-		return $this->parser->saveHTML($this->document);
+		return true;
 	}
 
-	public function renderWithoutDocType(): string
+	public function toString(): string
 	{
 		$node = $this->document->firstChild;
 		if ($node === null) {
@@ -47,7 +45,7 @@ final class Html5DomRenderer implements DomRendererInterface
 
 	public function __toString(): string
 	{
-		return $this->renderWithoutDocType();
+		return $this->toString();
 	}
 
 }

@@ -7,6 +7,9 @@ use DOMAttr;
 final class RuleHelper
 {
 
+	/**
+	 * @param string[] $classes
+	 */
 	public static function matchClasses(array $classes): callable
 	{
 		return function (DOMAttr $attribute) use ($classes): void {
@@ -16,6 +19,9 @@ final class RuleHelper
 		};
 	}
 
+	/**
+	 * @param string[] $patterns
+	 */
 	public static function matchRegexClasses(array $patterns): callable
 	{
 		return function (DOMAttr $attribute) use ($patterns): void {

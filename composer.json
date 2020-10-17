@@ -6,8 +6,9 @@
     "require": {
         "php": ">=7.4",
         "masterminds/html5": "^2.7",
-        "symfony/css-selector": "^5.1"
-    },
+        "symfony/css-selector": "^5.1",
+		"ext-dom": "*"
+	},
     "require-dev": {
         "codeception/codeception": "^4.1",
         "codeception/module-asserts": "^1.1",

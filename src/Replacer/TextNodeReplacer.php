@@ -63,7 +63,7 @@ final class TextNodeReplacer
 
 			if ($child instanceof DOMCharacterData) {
 				$this->texts[] = $child;
-			} else if ($child->hasChildNodes()) {
+			} elseif ($child->hasChildNodes()) {
 				$this->iterateChildNodes($child);
 			}
 
@@ -117,6 +117,7 @@ final class TextNodeReplacer
 				foreach ($replaceWith as $item) {
 					$parent->insertBefore($item, $node);
 				}
+
 				$parent->removeChild($node);
 			}
 

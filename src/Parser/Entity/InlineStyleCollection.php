@@ -31,6 +31,9 @@ final class InlineStyleCollection
 		unset($this->styles[$name]);
 	}
 
+	/**
+	 * @param string[] $names
+	 */
 	public function createSubCollectionBy(array $names): self
 	{
 		$styles = [];

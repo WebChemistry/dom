@@ -99,7 +99,7 @@ Lorem ipsum <strong class="italic h2">is simply</strong>
 <a>tester</a>
 <span style="color: #FFF;font-weight: bold">white</span> and <span style="color: red">red</span>
 
-#tester xxx <a href="asd">#tester2</a> www', trim($document->renderWithoutDocType()));
+#tester xxx <a href="asd">#tester2</a> www', trim($document->toString()));
 	}
 
 	private function purify(string $html, ...$rules): string
@@ -109,7 +109,7 @@ Lorem ipsum <strong class="italic h2">is simply</strong>
 
 		$document = $purifier->purify($html);
 
-		return trim($document->renderWithoutDocType());
+		return trim($document->toString());
 	}
 
 }

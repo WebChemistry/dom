@@ -6,7 +6,7 @@ use LogicException;
 
 final class FileInfo
 {
-	
+
 	private const SUFFIX_LOOKUP_TABLE = [
 		'image/jpeg' => '.jpg',
 		'image/png' => '.png',
@@ -39,7 +39,7 @@ final class FileInfo
 		if (!isset(self::SUFFIX_LOOKUP_TABLE[$this->mimeType])) {
 			throw new LogicException(sprintf('MimeType %s not found in lookup table', $this->mimeType));
 		}
-		
+
 		return self::SUFFIX_LOOKUP_TABLE[$this->mimeType];
 	}
 

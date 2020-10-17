@@ -2,12 +2,13 @@
 
 namespace WebChemistry\Dom\Parser;
 
-use DOMDocument;
+use InvalidArgumentException;
 use Masterminds\HTML5;
-use WebChemistry\Dom\Renderer\DomRendererInterface;
-use WebChemistry\Dom\Renderer\Html5DomRenderer;
+use WebChemistry\Dom\Renderer\DocumentInterface;
+use WebChemistry\Dom\Renderer\DocumentObjectInterface;
+use WebChemistry\Dom\Renderer\Html5Document;
 
-final class Html5DocumentParser implements DomDocumentParserInterface
+final class Html5DocumentParser implements HtmlDocumentParserInterface
 {
 
 	private HTML5 $parser;
@@ -17,14 +18,23 @@ final class Html5DocumentParser implements DomDocumentParserInterface
 		$this->parser = new HTML5(['disable_html_ns' => true]);
 	}
 
-	public function parseHtml(string $html, array $options = []): DOMDocument
+	/**
+	 * @param string|DocumentInterface $document
+	 * @param mixed[] $options
+	 */
+	public function parseHtml($document, array $options = []): DocumentObjectInterface
 	{
-		return $this->parser->loadHTML($html, $options);
-	}
+		if ($document instanceof DocumentObjectInterface) {
+			return $document;
+		} elseif ($document instanceof DocumentInterface) {
+			$string = $document->toString();
+		} elseif (is_string($document)) {
+			$string = $document;
+		} else {
+			throw new InvalidArgumentException(sprintf('Argument must be instance of %s or string', DocumentInterface::class));
+		}
 
-	public function parseHtmlReturnRenderer(string $html, array $options = []): DomRendererInterface
-	{
-		return new Html5DomRenderer($this->parser, $this->parseHtml($html, $options));
+		return new Html5Document($this->parser, $this->parser->loadHTML($string, $options));
 	}
 
 }

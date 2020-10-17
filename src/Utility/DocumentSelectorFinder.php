@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace WebChemistry\Dom;
+namespace WebChemistry\Dom\Utility;
 
 use DOMDocument;
 use DOMNode;
@@ -8,20 +8,18 @@ use DOMXPath;
 use InvalidArgumentException;
 use Symfony\Component\CssSelector\CssSelectorConverter;
 
-final class DomFinder
+final class DocumentSelectorFinder
 {
 
 	private DOMDocument $document;
+
 	private CssSelectorConverter $selector;
+
 	private DOMNode $node;
 
 	public function __construct(DOMNode $node)
 	{
-		if ($node instanceof DOMDocument) {
-			$document = $node;
-		} else {
-			$document = $node->ownerDocument;
-		}
+		$document = $node instanceof DOMDocument ? $node : $node->ownerDocument;
 
 		if (!$document) {
 			throw new InvalidArgumentException('Invalid DOMNode');
@@ -33,7 +31,6 @@ final class DomFinder
 	}
 
 	/**
-	 * @param string $selector
 	 * @return DOMNode[]
 	 */
 	public function find(string $selector): array
