@@ -30,7 +30,15 @@ final class TextNodeReplacer
 		return $this;
 	}
 
-	public function setSplitCallback(string $regex, callable $callback): self
+	public function setSplitCallback(string $text, callable $callback): self
+	{
+		$this->splitRegex = sprintf('#(?<=^|\s)(%s)(?=$|\s)#', preg_quote($text, '#'));
+		$this->splitCallback = $callback;
+
+		return $this;
+	}
+
+	public function setSplitRegexCallback(string $regex, callable $callback): self
 	{
 		$this->splitCallback = $callback;
 		$this->splitRegex = $regex;
