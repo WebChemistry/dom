@@ -3,6 +3,7 @@
 namespace WebChemistry\Dom\Renderer;
 
 use DOMDocument;
+use DOMElement;
 use Masterminds\HTML5;
 
 final class Html5Document implements DocumentObjectInterface
@@ -28,8 +29,29 @@ final class Html5Document implements DocumentObjectInterface
 		return true;
 	}
 
-	public function toString(): string
+	public function toString(bool $raw = false): string
 	{
+		if ($raw) {
+			return $this->parser->saveHTML($this->document);
+		}
+
+		// content inside <html>
+		$elements = $this->document->getElementsByTagName('html');
+		if ($elements->count() === 1) {
+			/** @var DOMElement $element */
+			$element = $elements[0];
+
+			if ($element->hasChildNodes()) {
+				$html = '';
+				foreach ($element->childNodes as $node) {
+					$html .= $this->parser->saveHTML($node);
+				}
+
+				return $html;
+			}
+		}
+
+		// or remove DOCTYPE
 		$node = $this->document->firstChild;
 		if ($node === null) {
 			return '';
