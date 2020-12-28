@@ -45,7 +45,7 @@ final class RedudantWhitespaceRemover
 
 		if ($node = $lastChild->lastChild) {
 			if ($node instanceof DOMText) {
-				$node->textContent = preg_replace('#(\s|\xC2\xA0)#', '', $node->textContent) ?? $node->textContent;
+				$node->textContent = preg_replace('#(\s|\xC2\xA0)+$#', '', $node->textContent) ?? $node->textContent;
 				if (!$node->textContent) {
 					$node->parentNode->removeChild($node);
 				}
